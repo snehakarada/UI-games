@@ -47,9 +47,11 @@ function getBox(number) {
   if (toShowLaddersInaBoard(number) !== 1) {
     return toShowLaddersInaBoard(number);
   }
+
   if (toShowSnakesInaBoard(number) !== 1) {
     return toShowSnakesInaBoard(number);
   }
+  
   if (isMovePos(number, p1Pos)) {
     return '| ' + p1Symbol + '  ';
   }
@@ -80,14 +82,35 @@ function isEnd(number) {
 
 function getBoard() {
   let board = '';
+  
   for (let number = 1; number <= 100; number++) {
     board += getBox(number) + isEnd(number);
   }
+
   return board;
 }
 
 function wholeBoard() {
   return '|' + repeat('-', 58) + '\n' + getBoard();
+}
+
+function checkingWinner(position , playerName) {
+  if (position === 100) {
+    console.log(playerName, ':', position, '     |', p2Name, ':', p2Pos);
+    console.log('🏆🏆🏆', playerName, "is the winner 🏆🏆🏆");
+    return 0;
+  }
+
+  return '';
+}
+
+function checkingPosExceeding(position, currentNumber, playerName) {
+  if (p1Pos > 100) {
+    position -= currentNumber;
+    console.log(playerName, ', you are exceeding limit you need only', 100 - position);
+  }
+
+  return position;
 }
 
 function ladderUpdation(score, pName) {
@@ -138,16 +161,9 @@ function player1Score() {
   p1Pos += ladderUpdation(p1Pos, p1Name);
   p1Pos -= snakeUpadation(p1Pos, p1Name);
 
-  if (p1Pos > 100) {
-    p1Pos -= p1CurrNum;
-    console.log(p1Name, ', you are exceeding limit you need only', 100 - p1Pos);
-  }
-  if (p1Pos === 100) {
-    console.log(p1Name, ':', p1Pos, '     |', p2Name, ':', p2Pos);
-    console.log('🏆🏆🏆', p1Name, "is the winner 🏆🏆🏆");
-    return 0;
-  }
-  return '';
+  p1Pos = checkingPosExceeding(p1Pos, p1CurrNum, p1Name);
+
+  return checkingWinner(p1Pos, p1Name);
 }
 
 function player2Score() {
@@ -157,33 +173,29 @@ function player2Score() {
   p2Pos += p2CurrNum;
   p2Pos += ladderUpdation(p2Pos, p2Name);
   p2Pos -= snakeUpadation(p2Pos, p2Name);
+  p2Pos = checkingPosExceeding(p2Pos, p2CurrNum, p2Name);
 
-  if (p2Pos > 100) {
-    p2Pos -= p2CurrNum;
-    console.log(p2Name, ', you are exceeding limit you need only', 100 - p2Pos);
-  }
-
-  if (p2Pos === 100) {
-    console.log(p1Name, ':', p1Pos, '     |', p2Name, ':', p2Pos);
-    console.log('🏆🏆🏆', p2Name, "is the winner 🏆🏆🏆");
-    return 0;
-  }
-  return '';
+  return checkingWinner(p2Pos, p2Name);
 }
 
 function gameStart() {
   console.clear();
-  console.log(p1Name, ':', p1Pos, '     |', p2Name, ':', p2Pos);
+  console.log(p1Name, p1Symbol, ':', p1Pos, '     |', p2Name, p2Symbol, ':', p2Pos);
   console.log(wholeBoard());
 
-  const exit1 = player1Score();
-  if (exit1 === 0) {
-    return encodeURI;
+  const player1Move = player1Score();
+  
+  if (player1Move === 0) {
+    return p1Name + p1Symbol + ':' + p1Pos + ' |' + p2Name + p2Symbol + ':' + p2Pos;
   }
-  const exit2 = player2Score();
-  if (exit2 === 0) {
-    return 'end';
+  const player2Move = player2Score();
+
+  if (player2Move === 0) {
+    return p1Name + p1Symbol + ':' + p1Pos + ' |' + p2Name + p2Symbol + ':' + p2Pos;
   }
+  console.log("wait until board moves!");
+  for (let i = 0; i < 1500000000; i++) {};// for dealay
+
   return gameStart();
 }
 
