@@ -1,3 +1,4 @@
+// there is no coins limit that one thing i have to keep.
 function checkAnswer(index, userAnswer) {
   const answers = ['bottle', 'monitor', 'switch', 'script', 'extinguisher'];
 
@@ -12,13 +13,19 @@ function rightAnswer(coins) {
 
 function wrongAnswer(coins) {
   console.log('\nWRONG ❌ anwer you lost 3 coins');
+
   return coins - 3;
 }
 
 function getClues(times, index) {
   const answers = ['bottle', 'monitor', 'switch', 'script', 'extinguisher'];
   const word = answers[index];
+
+  if (times > word.length) {
+    return 'NO MORE CLUES';
+  }
   const char = times - 1;
+
   return '\nIn the word ' + times + ' letter is ' + word[char] + '\n';
 }
 
@@ -27,6 +34,7 @@ function clue(coins) {
   if (confirmation) {
     return coins - 2;
   }
+
   console.log('then guess the answer');
   return coins;
 }
@@ -72,6 +80,7 @@ function gameStart() {
   console.log('* for clue type clue');
 
   const confirmation = confirm('do you want to play');
+  
   if (confirmation) {
     console.log(jumbleWords());
   }
