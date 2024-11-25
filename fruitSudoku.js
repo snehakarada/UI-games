@@ -1,7 +1,4 @@
-// worng msg is not working
-// maintain mistake count
-// good messages 
-// table is not updatinf for every user entered value.
+let mistakes = 2;
 
 const M = '🥭';
 const G = '🥑';
@@ -9,25 +6,31 @@ const A = '🍎';
 
 function trueMsg(userAnswer) {
   console.log('bravo! your are right ');
-  return '| ' + userAnswer;
+  return userAnswer;
 }
 
 function wrongMsg(boxNumber) {
-  console.log('NOPE ❌ you wrong');
-  return '|  ' + boxNumber;
+  mistakes = mistakes - 1;
+  if (mistakes === 0) {
+    return 0;
+  }
+
+  console.log('NOPE ❌ you wrong you have', mistakes, 'more chances');
+  return boxNumber;
 }
 
 function repeat(char, length) {
-  let repeatedChar = '';
+  let repeatedChar = '|';
+
   for (let iterate = 0; iterate <= length; iterate++) {
     repeatedChar += char;
   }
 
-  return repeatedChar + '|';
+  return repeatedChar + '|\n';
 }
 
 function checkAnswer(boxNumber, userAnswer) {
-  switch (boxNumber) {
+  switch (+boxNumber) {
     case 2: return userAnswer === G ? trueMsg(userAnswer) : wrongMsg(boxNumber);
     case 3: return userAnswer === A ? trueMsg(userAnswer) : wrongMsg(boxNumber);
     case 4: return userAnswer === G ? trueMsg(userAnswer) : wrongMsg(boxNumber);
@@ -35,14 +38,10 @@ function checkAnswer(boxNumber, userAnswer) {
     case 7: return userAnswer === A ? trueMsg(userAnswer) : wrongMsg(boxNumber);
     case 8: return userAnswer === M ? trueMsg(userAnswer) : wrongMsg(boxNumber);
   }
+  return '';
 }
 
-function getBox(number, boxNumber, userAnswer) {
-
-  if (number === boxNumber) {
-    return checkAnswer(boxNumber, userAnswer);
-  }
-
+function getBox(number) {
   switch (number) {
     case 1: return '| 🥭';
     case 5: return '| 🍎';
@@ -53,7 +52,7 @@ function getBox(number, boxNumber, userAnswer) {
 
 function isEnd(number) {
   if (number % 3 === 0) {
-    return '  | ' + '\n' + '|' + repeat('-', 12) + '\n';
+    return '  |\n' + repeat('-', 12);
   }
 
   return '';
@@ -68,15 +67,38 @@ function getBoard(boxNumber, userAnswer) {
 }
 
 function wholeBoard(boxNumber, userAnswer) {
-  return '|' + repeat('-', 12) + '\n' + getBoard(boxNumber, userAnswer);
+  return repeat('-', 12) + getBoard(boxNumber, userAnswer);
 }
 
-function fruitSudoku(string) {
-  const boxNumber = +prompt('which box you want to fill');
+function readBoard(string, index, updatedString, userAnswer, boxNumber) {
+  if (index >= string.length) {
+    return updatedString;
+  }
+
+  if (string[index] === boxNumber) {
+    const a = checkAnswer(boxNumber, userAnswer)
+    if (a === 0) {
+      return 0;
+    }
+    updatedString += a;
+    index++;
+  }
+  updatedString += string[index];
+  return readBoard(string, index + 1, updatedString, userAnswer, boxNumber);
+}
+
+function fruitSudoku(string, times) {
+  if (times === 0) {
+    return 'you won the game';
+  }
+  const boxNumber = prompt('which box you want to fill');
   const userAnswer = prompt('Enter your answer');
-  const a = string + wholeBoard(boxNumber, userAnswer);
+  const a = readBoard(string, 0, '', userAnswer, boxNumber);
+  if (a === 0) {
+    return 'you lost your chances';
+  }
   console.log(a);
-  return fruitSudoku();
+  return fruitSudoku(a, times - 1);
 }
 
 function game1() {
@@ -88,10 +110,10 @@ function game1() {
   const confirmation = confirm('do you want play');
 
   if (confirmation) {
-    fruitSudoku(string);
+    return fruitSudoku(string, 6);
   }
-  console.log('bye 👋');
+  return 'bye';
 
 }
-game1();
+console.log(game1());
 
